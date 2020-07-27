@@ -20,7 +20,7 @@ jobs:
           name: Running tests
           command: |
             . venv/bin/activate
-            pytest tests_DBSCAN
+            pytest tests_DBSCAN.py
       - store_artifacts:
           path: test-reports/
           destination: python_app
