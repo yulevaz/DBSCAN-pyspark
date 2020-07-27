@@ -25,5 +25,5 @@ jobs:
           path: test-reports/
           destination: python_app
       - store_test_results:
-	  path: test-results
+          path: test-results
 
