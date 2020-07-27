@@ -12,7 +12,7 @@ jobs:
             python3 -m venv venv
             . venv/bin/activate
             pip install -r requirements.txt
-            export SPARK_HOME=venv/lib/python3.6/site-packages
+            export SPARK_HOME=/home/circleci/.local/bin/pyspark
       - save_cache:
           key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
