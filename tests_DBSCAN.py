@@ -1,5 +1,3 @@
-import findspark
-findspark.init()
 from pyspark.sql import SparkSession
 from HasConnectivity import HasConnectivity
 from HasDistance import HasDistance
