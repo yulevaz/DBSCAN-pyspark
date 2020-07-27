@@ -53,7 +53,7 @@ def test_conn_as_dist():
 
 def test_connectivity():
 
-	spark = SparkSession.builder.appName("test_connectivity").getOrCreate()
+	spark = SparkSession.builder.getOrCreate()
 	sc = spark.sparkContext
 
 	A =	[[1,1,0,0,0,0,0,0,0]
