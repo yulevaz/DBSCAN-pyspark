@@ -1,4 +1,0 @@
-findspark
-pyspark
-numpy
-pytest
