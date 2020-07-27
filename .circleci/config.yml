@@ -2,25 +2,15 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.6
+      - image: chrsep/alpine-java-python
     steps:
       - checkout
-      - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
           command: |
-            python3 -m venv venv
-            . venv/bin/activate
             pip install -r requirements.txt
-            export SPARK_HOME=/home/circleci/.local/bin/pyspark
-      - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
-          paths:
-            - "venv"
       - run:
           name: Running tests
           command: |
-            . venv/bin/activate
             pytest tests_DBSCAN.py
       - store_artifacts:
           path: test-reports/
