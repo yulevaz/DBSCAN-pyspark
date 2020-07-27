@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: chrsep/alpine-java-python
+      - image: elancapital/docker-java-python3
     steps:
       - checkout
       - run:
