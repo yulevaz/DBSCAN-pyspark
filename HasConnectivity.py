@@ -55,5 +55,5 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 		IMatrix1 = IndexedRowMatrix(sc.parallelize(irows1))
 		IMatrix2 = IndexedRowMatrix(sc.parallelize(irows2))
 		cart = IMatrix1.rows.cartesian(IMatrix2.rows)
-		A = cart.map(__conn_f)
+		A = cart.map(self.__conn_f)
 		return A
