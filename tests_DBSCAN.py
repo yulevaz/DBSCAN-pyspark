@@ -23,13 +23,13 @@ class DistMock(HasDistance):
 class ConnMock(HasConnectivity):
 
 	@keyword_only
-	def __init__(self, distance=None):
+	def __init__(self, distance=None, radius=None):
 		super(ConnMock, self).__init__()
 		kwargs = self._input_kwargs
 		self.setParams(**kwargs)
 
 	@keyword_only
-	def setParams(self, distance=None):
+	def setParams(self, distance=None, radius=None):
 		kwargs = self._input_kwargs
 		return self._set(**kwargs) 
 
