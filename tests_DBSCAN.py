@@ -60,7 +60,7 @@ def test_conn_as_dist():
 	v1 = [1,0]
 	v2 = [0,1]
 	d = np.sqrt(2)
-	mock = ConnMock(distance = lambda x,y : np.sqrt(np.sum(np.power(np.array(x)-np.array(y),2)))) 
+	mock = ConnMock(distance = lambda x,y : np.sqrt(np.sum(np.power(np.array(x)-np.array(y),2))),radius=1) 
 	dr = mock.getDistance()(v1,v2)
 	
 	assert d == approx(dr)
