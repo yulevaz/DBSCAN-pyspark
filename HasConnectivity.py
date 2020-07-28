@@ -22,8 +22,6 @@ class HasConnectionsCol(HasOutputCol):
 
 class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 
-	__conn_f = lambda x : (x[0].index,x[1].index, 1 if dist(x[0].vector,x[1].vector) <= radius else 0)
-
 	def __init__(self):
 		super(HasConnectivity, self).__init__()
 
@@ -55,5 +53,6 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 		IMatrix1 = IndexedRowMatrix(sc.parallelize(irows1))
 		IMatrix2 = IndexedRowMatrix(sc.parallelize(irows2))
 		cart = IMatrix1.rows.cartesian(IMatrix2.rows)
-		A = cart.map(self.__conn_f)
+		A = cart.map(lambda x : (x[0].index,x[1].index, 1 if dist(x[0].vector,x[1].vector) <= radius else 0)
+)
 		return A
