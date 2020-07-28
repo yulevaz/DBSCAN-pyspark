@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession
 from HasConnectivity import HasConnectivity
+from HasDenseConnectivity import HasDenseConnectivity
 from HasDistance import HasDistance
 import numpy as np
 from pyspark import keyword_only 
