@@ -32,6 +32,19 @@ class ConnMock(HasConnectivity):
 		kwargs = self._input_kwargs
 		return self._set(**kwargs) 
 
+class DenseConnMock(HasDenseConnectivity):
+
+	@keyword_only
+	def __init__(self, distance=None):
+		super(ConnMock, self).__init__()
+		kwargs = self._input_kwargs
+		self.setParams(**kwargs)
+
+	@keyword_only
+	def setParams(self, distance=None):
+		kwargs = self._input_kwargs
+		return self._set(**kwargs) 
+
 def test_distance():
 
 	v1 = [1,0]
@@ -68,12 +81,40 @@ def test_connectivity():
 
 	pts = [[0,0],[1,0],[9,10],[10,10],[10,9],[10,11],[-5,-5],[-5,-6],[-5.5,-5.5]]	
 
-	conn = ConnMock(distance = lambda x,y : np.sqrt(np.sum(np.abs(np.array(x)-np.array(y)))))
+	conn = ConnMock(distance = lambda x,y : np.sqrt(np.sum(np.abs(np.array(x)-np.array(y)))),radius=1)
 	rdd = sc.parallelize(pts) 
-	rddr = conn.getConnectivity(rdd,rdd,1,sc)
+	rddr = conn.getConnectivity(rdd,rdd,sc)
 	B = rddr.collect()
 	B.sort()
 		
 	assert 0 == np.sum(np.array(A) - conn.dist_array(B))
 		
-	
+'''	
+def test_dense_connectivity():
+
+	spark = SparkSession.builder.getOrCreate()
+	sc = spark.sparkContext
+
+	A =	[[1,0,0,0,0,0,0,0,0,0,0]
+		,[0,1,0,0,0,0,0,0,0,0,0]
+		,[0,0,1,1,0,0,0,0,0,0,0]
+		,[0,0,1,1,1,1,0,0,0,0,0]
+		,[0,0,0,1,1,0,0,0,0,0,0]
+		,[0,0,0,1,0,1,0,0,0,0,0]
+		,[0,0,0,0,0,0,1,1,1,0,0]
+		,[0,0,0,0,0,0,1,1,1,0,0]
+		,[0,0,0,0,0,0,1,1,1,0,0]
+		,[0,0,0,0,0,0,0,0,0,1,0]
+		,[0,0,0,0,0,0,0,0,0,0,1]]
+
+	pts = [[0,0],[1,0],[9,10],[10,10],[10,9],[10,11],[-5,-5],[-5,-6],[-5.5,-5.5],[-2,-2],[-5,0]]	
+
+	conn = DenseConnMock(distance = lambda x,y : np.sqrt(np.sum(np.abs(np.array(x)-np.array(y)))),radius=1,density=2)
+	rdd = sc.parallelize(pts) 
+	rddr = conn.getConnectivity(rdd,rdd,sc)
+	B = rddr.collect()
+	B.sort()
+		
+	assert 0 == np.sum(np.array(A) - conn.dist_array(B))
+		
+'''	

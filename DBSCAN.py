@@ -20,30 +20,16 @@ import functools
 #Number of the rank reduction for the eigenvectors
 class HasDensity(Params):
 
-    Density = Param(Params._dummy(), "Density", "Density")
+    density = Param(Params._dummy(), "density", "density")
 
     def __init__(self):
         super(HasDensity, self).__init__()
 
     def setDensity(self, value):
-        return self._set(Density=value)
+        return self._set(density=value)
 
     def getDensity(self):
-        return self.getOrDefault(self.Density)
-
-#Radius of the DBSCAN to transform new data
-class HasRadius(Params):
-
-    radius = Param(Params._dummy(), "radius", "radius")
-
-    def __init__(self):
-        super(HasRadius, self).__init__()
-
-    def setRadius(self, value):
-        return self._set(radius=value)
-
-    def getRadius(self):
-        return self.getOrDefault(self.radius)
+        return self.getOrDefault(self.density)
 
 #Previous data considered for distance calculation between them and new data
 class HasPrevdata(Params):
@@ -101,7 +87,8 @@ class DBSCAN( Estimator, HasFeaturesCol, HasOutputCol,
 		x = dataset.select(self.getFeaturesCol())
 		rddv = x.rdd.map(list)
 		#calculate distance amtrix
-		Aarr = self._dist_matrix(rddv,rddv,sc)
+		rad = self.getRadius()
+		Aarr = self.getConnectivity(rddv,rddv,radius,sc)
 		return DBSCANModel(featuresCol=self.getFeaturesCol(), predictionCol=self.getPredictionCol(), radius=self.getRadius(), prevdata=rddv)
 		
 #Transformer of spectral clustering for pySpark
