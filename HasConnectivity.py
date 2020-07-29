@@ -1,5 +1,6 @@
 import numpy as np
 from pyspark.mllib.linalg.distributed import IndexedRowMatrix
+from pyspark.mllib.linalg.distributed import CoordinateMatrix
 from pyspark.mllib.linalg.distributed import IndexedRow
 from pyspark.ml.param.shared import *
 from HasDistance import HasDistance
@@ -25,15 +26,15 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 	def __init__(self):
 		super(HasConnectivity, self).__init__()
 
-	#Convert connection matrix of (i-index,j-index,distance) format
+	#Convert connection CoordinateMatrix of (i-index,j-index,distance) format
 	#in an array matrix
 	# @param	D		Distance matrix in (i-index,j-index,distance) format
 	# @return	numpy.array	Distance matrix
-	def dist_array(self,D):
+	def toArray(self,D):
 		dim = int(np.sqrt(len(D)))
 		Arr = np.empty([dim,dim]) 
 		for d in D:
-			Arr[d[0],d[1]] = d[2]
+			Arr[d.i,d.j] = d.value
 
 		return Arr
 
@@ -53,6 +54,6 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 		IMatrix1 = IndexedRowMatrix(sc.parallelize(irows1))
 		IMatrix2 = IndexedRowMatrix(sc.parallelize(irows2))
 		cart = IMatrix1.rows.cartesian(IMatrix2.rows)
-		A = cart.map(lambda x : (x[0].index,x[1].index, 1 if dist(x[0].vector,x[1].vector) <= radius else 0)
+		A = cart.map(lambda x : (x[0].index, x[1].index, 1 if dist(x[0].vector,x[1].vector) <= radius else 0)
 )
-		return A
+		return CoordinateMatrix(A)

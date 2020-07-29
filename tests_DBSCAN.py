@@ -36,13 +36,13 @@ class ConnMock(HasConnectivity):
 class DenseConnMock(HasDenseConnectivity):
 
 	@keyword_only
-	def __init__(self, distance=None):
-		super(ConnMock, self).__init__()
+	def __init__(self, distance=None, radius=None, density=None):
+		super(DenseConnMock, self).__init__()
 		kwargs = self._input_kwargs
 		self.setParams(**kwargs)
 
 	@keyword_only
-	def setParams(self, distance=None):
+	def setParams(self, distance=None, radius=None, density=None):
 		kwargs = self._input_kwargs
 		return self._set(**kwargs) 
 
@@ -84,12 +84,12 @@ def test_connectivity():
 
 	conn = ConnMock(distance = lambda x,y : np.sqrt(np.sum(np.abs(np.array(x)-np.array(y)))),radius=1)
 	rdd = sc.parallelize(pts) 
-	rddr = conn.getConnectivity(rdd,rdd,sc)
-	B = rddr.collect()
+	cmatrix = conn.getConnectivity(rdd,rdd,sc)
+	B = entries.collect()
 	B.sort()
 		
-	assert 0 == np.sum(np.array(A) - conn.dist_array(B))
-		
+	assert 0 == np.sum(np.array(A) - conn.toArray(B))
+	
 '''	
 def test_dense_connectivity():
 
@@ -115,7 +115,6 @@ def test_dense_connectivity():
 	rddr = conn.getConnectivity(rdd,rdd,sc)
 	B = rddr.collect()
 	B.sort()
-		
-	assert 0 == np.sum(np.array(A) - conn.dist_array(B))
-		
-'''	
+	return B	
+	#assert 0 == np.sum(np.array(A) - conn.dist_array(B))
+'''

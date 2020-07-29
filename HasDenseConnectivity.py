@@ -5,7 +5,11 @@ class HasDenseConnectivity(HasConnectivity, HasDensity):
 
 	def __init__(self):
 		super(HasDenseConnectivity, self).__init__()
-
+	
+	#Generate dense connectivity matrix
+	# @param	CMatrix		CoordinateMatrix
+	# @return	CMatrix		CoordinateMatrix with dense connectivity matrix 
+		
 	#Calculate connetivity matrix with IndexedRows and return a numpy.array matrix
 	# @param	rddv1		First RDD with dataset
 	# @param	rddv2		Second RDD with dataset
@@ -14,5 +18,7 @@ class HasDenseConnectivity(HasConnectivity, HasDensity):
 	# @return	numpy.array	Connectivity matrix
 	def getConnectivity(self,rddv1,rddv2,sc):
 		dens = self.getDensity()
-		rdd = super.getConnectivity(self,rddv1,rddv2,sc)
+		rdd = super(HasDenseConnectivity, self).getConnectivity(rddv1,rddv2,sc)
+		
+		return rdd
 
