@@ -85,10 +85,9 @@ def test_connectivity():
 	conn = ConnMock(distance = lambda x,y : np.sqrt(np.sum(np.abs(np.array(x)-np.array(y)))),radius=1)
 	rdd = sc.parallelize(pts) 
 	cmatrix = conn.getConnectivity(rdd,rdd,sc)
-	B = entries.collect()
-	B.sort()
+	B = conn.toArray(cmatrix)
 		
-	assert 0 == np.sum(np.array(A) - conn.toArray(B))
+	assert 0 == np.sum(np.array(A) - B)
 	
 '''	
 def test_dense_connectivity():

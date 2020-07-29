@@ -28,11 +28,12 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 
 	#Convert connection CoordinateMatrix of (i-index,j-index,distance) format
 	#in an array matrix
-	# @param	D		Distance matrix in (i-index,j-index,distance) format
+	# @param	D		CoordinateMatrix in (i-index,j-index,distance) format
 	# @return	numpy.array	Distance matrix
 	def toArray(self,D):
 		dim = int(np.sqrt(len(D)))
 		Arr = np.empty([dim,dim]) 
+		Darr = D.entries.collect()
 		for d in D:
 			Arr[d.i,d.j] = d.value
 
