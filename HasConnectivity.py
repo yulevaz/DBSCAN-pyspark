@@ -31,10 +31,10 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 	# @param	D		CoordinateMatrix in (i-index,j-index,distance) format
 	# @return	numpy.array	Distance matrix
 	def toArray(self,D):
-		dim = int(np.sqrt(len(D)))
-		Arr = np.empty([dim,dim]) 
 		Darr = D.entries.collect()
-		for d in D:
+		dim = int(np.sqrt(len(Darr)))
+		Arr = np.empty([dim,dim]) 
+		for d in Darr:
 			Arr[d.i,d.j] = d.value
 
 		return Arr
