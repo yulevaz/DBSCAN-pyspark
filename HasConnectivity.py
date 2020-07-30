@@ -29,11 +29,12 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 	#Convert connection CoordinateMatrix of (i-index,j-index,distance) format
 	#in an array matrix
 	# @param	D		CoordinateMatrix in (i-index,j-index,distance) format
+	# @param	dim		Dimension of connectivity matrix
 	# @return	numpy.array	Distance matrix
-	def toArray(self,D):
+	def toArray(self,D,dim):
 		Darr = D.entries.collect()
-		dim = int(np.sqrt(len(Darr)))
-		Arr = np.empty([dim,dim]) 
+		Arr = np.zeros([dim,dim]) 
+		np.fill_diagonal(Arr,1)
 		for d in Darr:
 			Arr[d.i,d.j] = d.value
 
@@ -52,9 +53,9 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 		dlist2 = rddv2.collect()
 		irows1 = [IndexedRow(i,dlist1[i]) for i in range(0,len(dlist1))]
 		irows2 = [IndexedRow(i,dlist2[i]) for i in range(0,len(dlist2))]
-		IMatrix1 = IndexedRowMatrix(sc.parallelize(irows1))
-		IMatrix2 = IndexedRowMatrix(sc.parallelize(irows2))
-		cart = IMatrix1.rows.cartesian(IMatrix2.rows)
+		imatrix1 = IndexedRowMatrix(sc.parallelize(irows1))
+		imatrix2 = IndexedRowMatrix(sc.parallelize(irows2))
+		cart = imatrix1.rows.cartesian(imatrix2.rows)
 		A = cart.map(lambda x : (x[0].index, x[1].index, 1 if dist(x[0].vector,x[1].vector) <= radius else 0)
 )
 		return CoordinateMatrix(A)
