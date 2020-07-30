@@ -89,7 +89,6 @@ def test_connectivity():
 		
 	assert 0 == np.sum(np.array(A) - B)
 	
-'''	
 def test_dense_connectivity():
 
 	spark = SparkSession.builder.getOrCreate()
@@ -115,4 +114,3 @@ def test_dense_connectivity():
 	B = conn.toArray(cmatrix,len(pts))
 		
 	assert 0 == np.sum(np.array(A) - B)
-'''
