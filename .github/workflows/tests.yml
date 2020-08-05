@@ -5,11 +5,12 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
-    steps:
+    runs:
       - id: docker-pull
         run: git pull https://github.com/fauberso/dockerimg-java-python-r
         using: 'docker'
         image: 'docker-image/Dockerfile'
+    steps:
       - id: reqs
         run: pip install -r requirements.txt
       - id: tests
