@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: chrsep/alpine-java-python@master
+      - uses: chrsep/alpine-java-python@v2
       - id: ls
         run: ls ${PWD}
       - id: reqs
