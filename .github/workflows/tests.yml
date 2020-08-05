@@ -8,6 +8,6 @@ jobs:
     steps:
       - uses: chrsep/alpine-java-python@master
       - id: reqs
-        run: pip install -r requirements.txt
+        run: pip install -r "requirements.txt"
       - id: tests
         run: pytest tests_DBSCAN.py
