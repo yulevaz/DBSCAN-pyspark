@@ -1,0 +1,10 @@
+language: java
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+    - os: osx
+
+python:
+  - '3.6'
