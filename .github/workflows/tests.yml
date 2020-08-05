@@ -1,20 +1,27 @@
-version: 2
+name: DBSCAN-PYSPARK
+
+on:
+  push: 
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
 jobs:
   build:
     docker:
       - image: elancapital/docker-java-python3
     steps:
-      - checkout
-      - run:
+      - uses: actions/checkout@v2
+      run:
           command: |
             pip install -r requirements.txt
-      - run:
+      run:
           name: Running tests
           command: |
             pytest tests_DBSCAN.py
-        store_artifacts:
+      store_artifacts:
           path: test-reports/
           destination: python_app
-        store_test_results:
+      store_test_results:
           path: test-results
 
