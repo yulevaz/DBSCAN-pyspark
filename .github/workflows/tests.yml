@@ -3,12 +3,11 @@ name: DBSCAN-PYSPARK
 on: [push, pull_request]
 
 jobs:
-  container:
+  build:
+    runs-on: ubuntu-latest
     run: git pull https://github.com/fauberso/dockerimg-java-python-r
     using: 'docker'
     image: 'docker-image/Dockerfile'
-  build:
-    runs-on: ubuntu-latest
     steps:
       - id: reqs
         run: pip install -r requirements.txt
