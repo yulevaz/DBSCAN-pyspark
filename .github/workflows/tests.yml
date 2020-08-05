@@ -6,7 +6,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: docker/elancapital/docker-java-python3@v1
+      - id: docker
+        run: docker run --rm -p 8787:8787 elancapital/docker-java-python3 & docker pull elancapital/docker-java-python3
+      - uses: elancapital/docker-java-python3
       - id: reqs
         run: pip install -r requirements.txt
       - id: tests
