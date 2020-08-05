@@ -68,7 +68,6 @@ def test_conn_as_dist():
 def test_connectivity():
 
 	spark = SparkSession.builder.getOrCreate()
-	spark.set("spark.ui.port",25335)
 	sc = spark.sparkContext
 
 	A =	[[1,1,0,0,0,0,0,0,0]
@@ -93,7 +92,6 @@ def test_connectivity():
 def test_dense_connectivity():
 
 	spark = SparkSession.builder.getOrCreate()
-	spark.set("spark.ui.port",25335)
 	sc = spark.sparkContext
 
 	A =	[[1,0,0,0,0,0,0,0,0,0,0]
