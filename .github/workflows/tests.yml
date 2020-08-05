@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: chrsep/alpine-java-python@master
-      - id: ls
-        run: ls ${PWD}
+      - id: clone repo
+        run: git clone https://github.com/yulevaz/DBSCAN-pyspark
       - id: reqs
         run: pip install -r ./requirements.txt
       - id: tests
