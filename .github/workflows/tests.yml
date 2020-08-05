@@ -12,9 +12,9 @@ jobs:
           name: Running tests
           command: |
             pytest tests_DBSCAN.py
-      - store_artifacts:
+        store_artifacts:
           path: test-reports/
           destination: python_app
-      - store_test_results:
+        store_test_results:
           path: test-results
 
