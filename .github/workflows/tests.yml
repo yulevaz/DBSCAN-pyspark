@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: fauberso/dockerimg-java-python-r@master
+      - uses: docker/fauberso/dockerimg-java-python-r@master
       - id: reqs
         run: pip install -r requirements.txt
       - id: tests
