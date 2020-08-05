@@ -10,10 +10,9 @@ on:
 
 jobs:
   build:
-    docker:
-      image: elancapital/docker-java-python3
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: elancapital/docker-java-python3@master
       - id: reqs
         run: pip install -r requirements.txt
       - id: tests
