@@ -6,12 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    container: 
-      run: git pull https://github.com/fauberso/dockerimg-java-python-r
-      using: 'docker'
-      image: 'docker-image/Dockerfile'
-
     steps:
+        uses: chrsep/alpine-java-python
       - id: reqs
         run: pip install -r requirements.txt
       - id: tests
