@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: chrsep/alpine-java-python@master
       - id: ls
-        run: ls .
+        run: ls ${PWD}
       - id: reqs
         run: pip install -r ./requirements.txt
       - id: tests
