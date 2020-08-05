@@ -1,18 +1,12 @@
 name: DBSCAN-PYSPARK
 
-on:
-  push: 
-    branches:
-      - '*'
-  pull_request:
-    branches: 
-      - '*'
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: elancapital/docker-java-python3@master
+      - uses: docker/elancapital/docker-java-python3@v1
       - id: reqs
         run: pip install -r requirements.txt
       - id: tests
