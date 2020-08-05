@@ -12,8 +12,10 @@ jobs:
       image: elancapital/docker-java-python3
     steps:
       - uses: actions/checkout@v2
-      - run: pip install -r requirements.txt
-      - run: pytest tests_DBSCAN.py
+      - id: reqs
+        run: pip install -r requirements.txt
+      - id: tests
+        run: pytest tests_DBSCAN.py
       store_artifacts:
           path: test-reports/
           destination: python_app
