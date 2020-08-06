@@ -1,0 +1,26 @@
+language: general
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+    - os: osx
+python:
+  - '3.6'
+
+before_install:
+  - eval "${MATRIX_EVAL}"
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]];
+    then pyenv install -s 3.6.7 && pyenv global 3.6.7;
+    fi
+  - pip3 install --upgrade pip
+  - pip3 install virtualenv
+  - virtualenv .env -p python3
+  - source .env/bin/activate
+  - python --version
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - pytest
