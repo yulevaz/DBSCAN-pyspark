@@ -4,3 +4,7 @@ __pycache__/
 
 # Virtualenv
 venv/*
+
+# Graphframes
+graphframes-0.8.0-spark3.0-s_2.12.jar
+graphframes-0.8.0-spark3.0-s_2.12.jar.1

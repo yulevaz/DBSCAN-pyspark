@@ -21,6 +21,10 @@ before_install:
 
 install:
   - pip install -r requirements.txt
+  - wget https://dl.bintray.com/spark-packages/maven/graphframes/graphframes/0.8.0-spark3.0-s_2.12/graphframes-0.8.0-spark3.0-s_2.12.jar
+
+spark_envs:
+  - export PYSPARK_SUBMIT_ARGS="--packages graphframes:graphframes:0.8.0-spark3.0-s_2.12 pyspark-shell"
 
 script:
   - pytest

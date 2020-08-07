@@ -13,7 +13,7 @@ from pyspark.sql.types import FloatType
 from pyspark.sql import Row
 from pyspark import keyword_only  
 from pyspark.sql.functions import col
-import HasConnectivity
+from HasDenseConnectivity import HasDenseConnectivity
 import operator
 import functools
 
@@ -31,10 +31,11 @@ class HasPrevdata(Params):
     def getPrevdata(self):
         return self.getOrDefault(self.prevdata)
 
+'''
 #Estimator of spectral clustering for PySpark
 class DBSCAN( Estimator, HasFeaturesCol, HasOutputCol,
 			HasPredictionCol, HasRadius, HasDistance, 
-			HasDensity, HasConnectivity.HasConnectivity,
+			HasDensity, HasDenseConnectivity,
 			# Credits https://stackoverflow.com/a/52467470
 			# by https://stackoverflow.com/users/234944/benjamin-manns
 			DefaultParamsReadable, DefaultParamsWritable):
@@ -64,7 +65,10 @@ class DBSCAN( Estimator, HasFeaturesCol, HasOutputCol,
 		kwargs = self._input_kwargs
 		return self._set(**kwargs) 
 
-	def _getConnections(self,indexedMatrix):
+	# Get clusters id based on dense connectivity matrix
+	# @return	np.array	List of clusters id for each data
+	def _getClusters(self):
+		Aarr = self.getConnectivity(rddv,rddv,radius,sc)
 			
 
 	def _fit(self, dataset):
@@ -72,14 +76,14 @@ class DBSCAN( Estimator, HasFeaturesCol, HasOutputCol,
 	
 		x = dataset.select(self.getFeaturesCol())
 		rddv = x.rdd.map(list)
-		#calculate distance amtrix
+		#calculate distance matrix
 		rad = self.getRadius()
-		Aarr = self.getConnectivity(rddv,rddv,radius,sc)
 		return DBSCANModel(featuresCol=self.getFeaturesCol(), predictionCol=self.getPredictionCol(), radius=self.getRadius(), prevdata=rddv)
-		
+'''		
 #Transformer of spectral clustering for pySpark
 class DBSCANModel(Model, HasFeaturesCol, HasPredictionCol,
-			HasPrevdata, HasDistance,HasRadius,HasDensity,
+			HasDistance, HasRadius, 
+			HasDensity, HasDenseConnectivity, 
 			DefaultParamsReadable, DefaultParamsWritable):
 
 	@keyword_only
