@@ -26,6 +26,8 @@ install:
 spark_envs:
   - export PYTHONPATH=$PYTHONPATH:./graphframes-0.8.0-spark3.0-s_2.12.jar
   - export PYSPARK_SUBMIT_ARGS="--packages graphframes:graphframes:0.8.0-spark3.0-s_2.12 pyspark-shell"
+  - echo $PYTHONPATH
+  - echo $PYSPARK_SUBMIT_ARGS
 
 script:
   - pytest
