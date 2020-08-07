@@ -1,23 +1,16 @@
-import spark_eigen
 import numpy as np
-from pyspark import SparkContext
-from pyspark.mllib.linalg.distributed import RowMatrix
-from pyspark.mllib.linalg.distributed import IndexedRowMatrix
-from pyspark.mllib.linalg.distributed import IndexedRow
-from pyspark.mllib.linalg import DenseMatrix
-from pyspark.ml.pipeline import Estimator, Model, Pipeline
+from pyspark.ml.pipeline import Model, Estimator
 from pyspark.ml.param.shared import *
 from pyspark.ml.util import DefaultParamsReadable, DefaultParamsWritable 
-from pyspark.ml.feature import VectorAssembler
-from pyspark.sql.types import FloatType
 from pyspark.sql import Row
+from pyspark.sql import SparkSession
 from pyspark import keyword_only  
-from pyspark.sql.functions import col
 from HasDenseConnectivity import HasDenseConnectivity
-import operator
-import functools
+from HasDistance import HasDistance
+from HasRadius import HasRadius
+from HasDensity import HasDensity
 
-#Previous data considered for distance calculation between them and new data
+'''#Previous data considered for distance calculation between them and new data
 class HasPrevdata(Params):
 
     prevdata = Param(Params._dummy(), "prevdata", "prevdata")
@@ -30,28 +23,20 @@ class HasPrevdata(Params):
 
     def getPrevdata(self):
         return self.getOrDefault(self.prevdata)
-
 '''
-#Estimator of spectral clustering for PySpark
-class DBSCAN( Estimator, HasFeaturesCol, HasOutputCol,
-			HasPredictionCol, HasRadius, HasDistance, 
-			HasDensity, HasDenseConnectivity,
+
+
+#Estimator of DBSCAN for PySpark
+class DBSCAN( Estimator, HasPredictionCol, HasDenseConnectivity,
 			# Credits https://stackoverflow.com/a/52467470
 			# by https://stackoverflow.com/users/234944/benjamin-manns
 			DefaultParamsReadable, DefaultParamsWritable):
 
 	@keyword_only
-	def __init__(self, featuresCol=None, outputCol=None, radius=None, density=1):
-		super(SpectralClustering, self).__init__()
+	def __init__(self, featuresCol=None, predictionCol=None, distance=None, radius=None, density=1):
+		super(DBSCAN, self).__init__()
 		kwargs = self._input_kwargs
 		self.setParams(**kwargs)
-
-	 # Required in Spark >= 3.0
-	def setFeaturesCol(self, value):
-		"""
-		Sets the value of :py:attr:`featuresCol`.
-		""" 
-		return self._set(featuresCol=value)
 
 	# Required in Spark >= 3.0
 	def setPredictionCol(self, value):
@@ -61,56 +46,34 @@ class DBSCAN( Estimator, HasFeaturesCol, HasOutputCol,
 		return self._set(predictionCol=value)
 
 	@keyword_only
-	def setParams(self, featuresCol=None, predictionCol=None, radius=None, density=1):
+	def setParams(self, featuresCol=None, predictionCol=None, distance=None, radius=None, density=1):
 		kwargs = self._input_kwargs
 		return self._set(**kwargs) 
 
-	# Get clusters id based on dense connectivity matrix
-	# @return	np.array	List of clusters id for each data
-	def _getClusters(self):
-		Aarr = self.getConnectivity(rddv,rddv,radius,sc)
-			
 
 	def _fit(self, dataset):
-		sc = SparkContext.getOrCreate()
-	
-		x = dataset.select(self.getFeaturesCol())
-		rddv = x.rdd.map(list)
-		#calculate distance matrix
-		rad = self.getRadius()
-		return DBSCANModel(featuresCol=self.getFeaturesCol(), predictionCol=self.getPredictionCol(), radius=self.getRadius(), prevdata=rddv)
-'''		
+		return DBSCANModel(featuresCol=self.getFeaturesCol(), predictionCol=self.getPredictionCol(),
+					distance=self.getDistance(),radius=self.getRadius(), density=self.getDensity())
+
 #Transformer of spectral clustering for pySpark
-class DBSCANModel(Model, HasFeaturesCol, HasPredictionCol,
-			HasDistance, HasRadius, 
-			HasDensity, HasDenseConnectivity, 
+class DBSCANModel(Model, HasPredictionCol, HasDenseConnectivity, 
 			DefaultParamsReadable, DefaultParamsWritable):
 
 	@keyword_only
-	def __init__(self, featuresCol=None, predictionCol=None, radius=None, density=1, prevdata=None):
-		super(SpectralClusteringModel, self).__init__()
+	def __init__(self, featuresCol=None, predictionCol=None, distance=None, radius=None, density=1):
+		super(DBSCANModel, self).__init__()
 		kwargs = self._input_kwargs
 		self.setParams(**kwargs)
 
 	@keyword_only
-	def setParams(self, featuresCol=None, predictionCol=None, radius=None, density=1, prevdata=None):
+	def setParams(self, featuresCol=None, predictionCol=None, distance=None, radius=None, density=1):
 		kwargs = self._input_kwargs
 		return self._set(**kwargs) 
 
 	def _transform(self, dataset):
-		sc = SparkContext.getOrCreate()
-
-		#Get spectral clustering projecction
-		P = self.getProjection()
-		#Get data
+		spark = SparkSession.builder.getOrCreate()	
 		x = dataset.select(self.getFeaturesCol())
-		rdd2 = x.rdd.map(list)
-		#Get data adopted to calculate projection
-		rdd = self.getPrevdata()
-		#Calculate distance between new data and "training one"
-		Aarr = self._dist_matrix(rdd,rdd2,sc)
-		Arm = RowMatrix(sc.parallelize(Aarr))
-		#Transform new data
-		result = Arm.multiply(P)
-		df = result.rows.map(lambda x : Row(x.toArray().tolist())).toDF()
-		return df.withColumnRenamed("_1","projection")
+		graph = self.getConnectivity(x.rdd,spark)
+		spark.sparkContext.setCheckpointDir("/tmp/DBSCAN-connected-components")
+		df = graph.connectedComponents()
+		return df

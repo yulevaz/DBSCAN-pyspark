@@ -3,12 +3,14 @@ from pyspark.mllib.linalg.distributed import IndexedRowMatrix
 from pyspark.mllib.linalg.distributed import CoordinateMatrix
 from pyspark.mllib.linalg.distributed import IndexedRow
 from pyspark.ml.param.shared import *
+from pyspark import keyword_only  
 from pyspark.sql import *
 from pyspark.sql import Row
 from graphframes import GraphFrame
 from HasDistance import HasDistance
 from HasRadius import HasRadius
 
+'''
 #Previous data considered for distance calculation between them and new data
 class HasConnectionsCol(HasOutputCol):
 
@@ -22,12 +24,27 @@ class HasConnectionsCol(HasOutputCol):
 
     def getConnectionsCol(self):
         return self.getOrDefault(self.connections)
+'''
 
-
-class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
+class HasConnectivity(HasFeaturesCol, HasDistance, HasRadius):
 
 	def __init__(self):
 		super(HasConnectivity, self).__init__()
+		kwargs = self._input_kwargs
+		self.setParams(**kwargs)
+	 
+	# Required in Spark >= 3.0
+	def setFeaturesCol(self, value):
+		"""
+		Sets the value of :py:attr:`featuresCol`.
+		""" 
+		return self._set(featuresCol=value)
+
+	@keyword_only
+	def setParams(self, featuresCol=None, predictionCol=None, distance=None, radius=None, density=1):
+		kwargs = self._input_kwargs
+		return self._set(**kwargs) 
+
 
 	#Convert connection GraphFrame of (i-index,j-index,connected) format
 	#in an array matrix
@@ -52,7 +69,8 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 		radius = self.getRadius()
 		dist = self.getDistance()
 		dlist = rddv.collect()
-		irows = [IndexedRow(i,dlist[i]) for i in range(0,len(dlist))]
+		featurecol = self.getFeaturesCol()
+		irows = [IndexedRow(i,dlist[i][featurecol].toArray()) for i in range(0,len(dlist))]
 		imatrix = IndexedRowMatrix(sc.parallelize(irows))
 		cart = imatrix.rows.cartesian(imatrix.rows)
 
