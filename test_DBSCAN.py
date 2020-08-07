@@ -69,6 +69,7 @@ def test_connectivity():
 
 	spark = SparkSession.builder.getOrCreate()
 	sc = spark.sparkContext
+	sc.addPyFile("/home/yule/DBSCAN-pyspark/graphframes-0.8.0-spark3.0-s_2.12.jar")
 
 	A =	[[1,1,0,0,0,0,0,0,0]
 		,[1,1,0,0,0,0,0,0,0]
