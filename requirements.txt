@@ -1,4 +1,4 @@
 pyspark
 numpy
 pytest
-graphframe
+graphframes
