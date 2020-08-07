@@ -1,36 +1,33 @@
 from HasConnectivity import HasConnectivity
 from HasDensity import HasDensity
 from pyspark.mllib.linalg.distributed import CoordinateMatrix
+from graphframes import GraphFrame
 
 class HasDenseConnectivity(HasConnectivity, HasDensity):
 
 	def __init__(self):
 		super(HasDenseConnectivity, self).__init__()
 	
-	#Generate dense connectivity matrix
-	# @param	cmatrix		CoordinateMatrix
-	# @return	cmatrix	 	CoordinateMatrix with dense connectivity matrix 
-	def __densify(self,cmatrix):
-		nrow = cmatrix.numRows()
+	#Generate dense connectivity graph (GraphFrame)
+	# @param	cgraph		connectivity graph
+	# @return	cgraph	 	dense connectivity graph
+	def __densify(self,cgraph):
+		nrow = cgraph.vertices.count()
 		dens = self.getDensity()
-		idx = cmatrix.entries.map(lambda x : (x.i,x.value))\
+		idx = cgraph.edges.rdd.map(lambda x : (x[0],x[2]))\
 			.reduceByKey(lambda x,y : x + y)\
-			.map(lambda x : x[0] if x[1] > dens else None)\
-			.filter(lambda x : x != None)
+			.filter(lambda x : x[1] > dens)
 
-		cart = cmatrix.entries.cartesian(idx).map(lambda x : x[0] if (x[0].j == x[1] or x[0].i == x[1]) and x[0].value == 1 else None)\
-			.filter(lambda x : x != None)
-			
-		return CoordinateMatrix(cart)
+		cart = cgraph.edges.rdd.cartesian(idx).filter(lambda x : (x[0][0] == x[1][0] or x[0][1] == x[1][0]))\
+			.map(lambda x : x[0])
+		return cgraph.vertices,cart
 			
 	#Calculate connetivity matrix with IndexedRows and return a numpy.array matrix
-	# @param	rddv1		First RDD with dataset
-	# @param	rddv2		Second RDD with dataset
-	# @param	radius		If distance(rddv1[i],rddv2[j]) < radius, then they are connected
-	# @param	sc		SparkContext
+	# @param	rddv		RDD with dataset
+	# @param	spark		SparkSession
 	# @return	numpy.array	Connectivity matrix
-	def getConnectivity(self,rddv1,rddv2,sc):
-		cmatrix = super(HasDenseConnectivity, self).getConnectivity(rddv1,rddv2,sc)
-		R = self.__densify(cmatrix)			
-		return R
+	def getConnectivity(self,rddv,spark):
+		conn_graph = super(HasDenseConnectivity, self).getConnectivity(rddv,spark)
+		V,E = self.__densify(conn_graph)		
+		return GraphFrame(V,spark.createDataFrame(E))
 

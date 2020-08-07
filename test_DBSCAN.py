@@ -85,11 +85,10 @@ def test_connectivity():
 	conn = ConnMock(distance = lambda x,y : np.sqrt(np.sum(np.abs(np.array(x)-np.array(y)))),radius=1)
 	rdd = sc.parallelize(pts) 
 	cmatrix = conn.getConnectivity(rdd,spark)
-	B = conn.toArray(cmatrix,len(pts))
+	B = conn.toArray(cmatrix)
 		
 	assert 0 == np.sum(np.array(A) - B)
 
-'''	
 def test_dense_connectivity():
 
 	spark = SparkSession.builder.getOrCreate()
@@ -111,8 +110,7 @@ def test_dense_connectivity():
 
 	conn = DenseConnMock(distance = lambda x,y : np.sqrt(np.sum(np.abs(np.array(x)-np.array(y)))),radius=1,density=2)
 	rdd = sc.parallelize(pts) 
-	cmatrix = conn.getConnectivity(rdd,rdd,sc)
-	B = conn.toArray(cmatrix,len(pts))
+	cmatrix = conn.getConnectivity(rdd,spark)
+	B = conn.toArray(cmatrix)
 		
 	assert 0 == np.sum(np.array(A) - B)
-'''

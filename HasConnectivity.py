@@ -32,10 +32,10 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 	#Convert connection GraphFrame of (i-index,j-index,connected) format
 	#in an array matrix
 	# @param	D		GraphFrame in (i-index,j-index,connected) format
-	# @param	dim		Dimension of connectivity matrix
 	# @return	numpy.array	Distance matrix
-	def toArray(self,D,dim):
+	def toArray(self,D):
 		Darr = D.edges.collect()
+		dim = D.vertices.count()
 		Arr = np.zeros([dim,dim]) 
 		np.fill_diagonal(Arr,1)
 		for d in Darr:
@@ -45,7 +45,6 @@ class HasConnectivity(HasDistance, HasRadius, HasConnectionsCol):
 
 	#Calculate connetivity matrix with IndexedRows and return a GraphX
 	# @param	rddv		RDD with dataset
-	# @param	radius		If distance(rddv1[i],rddv2[j]) < radius, then they are connected
 	# @param	spark		SparkSession
 	# @return	numpy.array	Connectivity matrix
 	def getConnectivity(self,rddv,spark):
